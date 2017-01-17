@@ -1,7 +1,4 @@
-#overviewChart-chart, #requestsOverTime-chart {
+#chart {
   width: 100%;
   border: 1px solid #eee;
-  margin-left: 0;
-  margin-right: 0;
-  margin-bottom: 1em;
 }

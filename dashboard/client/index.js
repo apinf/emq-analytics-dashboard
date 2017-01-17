@@ -2,10 +2,10 @@ import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
 
-import moment from 'moment';
-import dc from 'dc';
+import nvd3 from 'nvd3';
 import d3 from 'd3';
-import crossfilter from 'crossfilter';
+
+import moment from 'moment';
 import _ from 'lodash';
 import $ from 'jquery';
 
@@ -21,108 +21,74 @@ Template.dashboard.onCreated(function(){
     });
   }
 
-  instance.parseChartData = (items) => {
+  instance.parseEsData = esData => _.map(esData, item => item._source);
 
-    // instance.analyticsTickDateFormat = {
-    //   d3: {
-    //     hour: '%Y-%m-%d-%H',
-    //     day: '%Y-%m-%d',
-    //     week: '%Y-%m-%W',
-    //     month: '%Y-%m',
-    //   },
-    //   moment: {
-    //     hour: 'YYYY-MM-DD-HH',
-    //     day: 'YYYY-MM-DD',
-    //     week: 'YYYY-MM-ww',
-    //     month: 'YYYY-MM',
-    //   },
-    // };
+  instance.parseDataForNV = data => {
 
-    const index = new crossfilter(items);
-    const dateFormat = d3.time.format('%Y-%m-%d-%H');
+    let arr = [];
+    let ticks = [];
 
-    const timeStampDimension = index.dimension((d) => {
-      let timeStamp = moment(d._source.date);
+    const a = _.map(data, item => {
+      item.date = moment(item.date).format('DD-MM-YYYY');
+      return item;
+    })
 
-      timeStamp = timeStamp.format('YYYY-MM-DD-HH');
+    const b = _.groupBy(a, 'date');
 
-      d._source.ymd = dateFormat.parse(timeStamp);
-
-      return d._source.ymd;
-    });
-
-    // Create timestamp group
-    const timeStampGroup = timeStampDimension.group();
-    // Group add dimensions
-    const all = index.groupAll();
-
-    // Keep data counters on a dashboard updated
-    dc.dataCount('#row-selection')
-      .dimension(index)
-      .group(all);
-
-    // Get MIN and MAX timestamp values
-    const minDate = d3.min(items, (d) => d._source.ymd);
-    const maxDate = d3.max(items, (d) => d._source.ymd);
-
-    // Init scales for axis
-    const timeScaleForLineChart = d3.time.scale().domain([minDate, maxDate]);
-    const timeScaleForRangeChart = d3.time.scale().domain([minDate, maxDate]);
+    for (key in b) {
+      arr.push([moment(key, 'DD-MM-YYYY').valueOf(), b[key].length])
+      ticks.push(moment(key, 'DD-MM-YYYY').valueOf())
+    }
 
     return {
-      timeStampDimension,
-      timeStampGroup,
-      timeScaleForLineChart,
-      timeScaleForRangeChart,
-    };
-  };
+      data: [
+        {
+          key: 'Series 1',
+          values: arr
+        }
+      ],
+      ticks
+    }
+  }
 
-  // Render charts on the page
-  instance.renderCharts = (parsedData) => {
-    const {
-      timeStampDimension,
-      timeStampGroup,
-      timeScaleForLineChart,
-      timeScaleForRangeChart,
-    } = parsedData;
+  instance.render = (chartData) => {
 
-    // Init charts
-    const requestsOverTime = dc.lineChart('#requestsOverTime-chart');
-    const overviewChart = dc.barChart('#overviewChart-chart');
+    const data = instance.parseEsData(chartData);
 
-    requestsOverTime
-      .height(350)
-      .renderArea(true)
-      .transitionDuration(300)
-      .margins({ top: 10, right: 20, bottom: 25, left: 40 })
-      .ordinalColors(['#2fa4e7'])
-      .x(timeScaleForLineChart)
-      .dimension(timeStampDimension)
-      .group(timeStampGroup)
-      .rangeChart(overviewChart)
-      .brushOn(false)
-      .renderHorizontalGridLines(true)
-      .renderVerticalGridLines(true)
-      .elasticY(true);
+    const dataForNV = instance.parseDataForNV(data);
 
-    overviewChart
-      .height(100)
-      .dimension(timeStampDimension)
-      .group(timeStampGroup)
-      .xUnits(dc.units.fp.precision(50))
-      .centerBar(true)
-      .gap(1)
-      .margins({ top: 10, right: 20, bottom: 25, left: 40 })
-      .ordinalColors(['#2fa4e7'])
-      .x(timeScaleForRangeChart)
-      .alwaysUseRounding(true)
-      .elasticY(true)
-      .yAxis()
-      .ticks(0);
+    console.log(dataForNV);
 
-    dc.renderAll(); // Render all charts
+    if (dataForNV.data) {
+      nv.addGraph(function() {
+        var chart = nv.models.cumulativeLineChart()
+        .x(function(d) { return d[0] })
+        .y(function(d) { return d[1]/100 }) //adjusting, 100% is 1.00, not 100 as it is in the data
+        .color(d3.scale.category10().range())
+        .useInteractiveGuideline(true)
+        ;
 
-  };
+        chart.xAxis
+        .tickValues(dataForNV.ticks)
+        .tickFormat(function(d) {
+          return d3.time.format('%x')(new Date(d))
+        });
+
+        chart.yAxis
+        .tickFormat(d3.format(',.1%'));
+
+        d3.select('#chart svg')
+        .attr('height', 500)
+        .datum(dataForNV.data)
+        .call(chart);
+
+        //TODO: Figure out a good way to do this automatically
+        nv.utils.windowResize(chart.update);
+
+        return chart;
+      });
+    }
+  }
 });
 
 Template.dashboard.onRendered(function(){
@@ -131,8 +97,7 @@ Template.dashboard.onRendered(function(){
   instance.autorun(() => {
     instance.getChartData({size: 1000})
       .then((items) => {
-        const parsedData = instance.parseChartData(items);
-        instance.renderCharts(parsedData);
+        instance.render(items)
       })
       .catch(err => console.error(err));
   });

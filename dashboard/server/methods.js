@@ -10,9 +10,9 @@ Meteor.methods({
     });
 
     return client.search(opts).then((res) => {
-        return res;
-      }, (err) => {
-        throw new Meteor.Error(err.message);
-      });
+      return res;
+    }, (err) => {
+      throw new Meteor.Error(err.message);
+    });
   }
 })
