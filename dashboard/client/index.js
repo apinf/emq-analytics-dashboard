@@ -29,11 +29,13 @@ Template.dashboard.onCreated(function(){
     let ticks = [];
 
     const a = _.map(data, item => {
-      item.date = moment(item.date).format('DD-MM-YYYY');
+      item.day = moment(item.date).format('DD-MM-YYYY');
       return item;
     })
 
-    const b = _.groupBy(a, 'date');
+
+
+    const b = _.groupBy(a, 'day');
 
     for (key in b) {
       arr.push([moment(key, 'DD-MM-YYYY').valueOf(), b[key].length])
@@ -57,8 +59,6 @@ Template.dashboard.onCreated(function(){
 
     const dataForNV = instance.parseDataForNV(data);
 
-    console.log(dataForNV);
-
     if (dataForNV.data) {
       nv.addGraph(function() {
         var chart = nv.models.cumulativeLineChart()
@@ -67,20 +67,19 @@ Template.dashboard.onCreated(function(){
         .color(d3.scale.category10().range())
         .useInteractiveGuideline(true)
         ;
-
         chart.xAxis
-        .tickValues(dataForNV.ticks)
-        .tickFormat(function(d) {
-          return d3.time.format('%x')(new Date(d))
-        });
+          .tickValues(dataForNV.ticks)
+          // .tickFormat(function(d) {
+          //   return d3.time.format('%x')(new Date(d))
+          // });
 
         chart.yAxis
-        .tickFormat(d3.format(',.1%'));
+          .tickFormat(d3.format(',.1%'));
 
         d3.select('#chart svg')
-        .attr('height', 500)
-        .datum(dataForNV.data)
-        .call(chart);
+          .attr('height', 500)
+          .datum(dataForNV.data)
+          .call(chart);
 
         //TODO: Figure out a good way to do this automatically
         nv.utils.windowResize(chart.update);
