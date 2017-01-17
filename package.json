@@ -5,13 +5,12 @@
     "start": "meteor run"
   },
   "dependencies": {
-    "crossfilter": "^1.3.12",
     "d3": "^3.5.17",
-    "dc": "^2.0.0-beta.32",
     "elasticsearch": "^12.0.1",
     "jquery": "^3.1.1",
     "lodash": "^4.17.2",
     "meteor-node-stubs": "~0.2.0",
-    "moment": "^2.16.0"
+    "moment": "^2.16.0",
+    "nvd3": "^1.8.5"
   }
 }
