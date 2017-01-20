@@ -25,32 +25,21 @@ Template.dashboard.onCreated(function(){
 
   instance.parseDataForNV = data => {
 
-
     const dataWithNormalizedDate = instance.normalizeDate(data)
+
     const grouppedByDate = instance.groupBy(dataWithNormalizedDate, 'day')
-    const dataForNV = instance.buildDataForNV(grouppedByDate);
+
+    const dataForNV = instance.buildDataForNV(grouppedByDate)
+
     const sortedByDate = instance.sortByDate(dataForNV);
 
     return {
       data: [
         {
           key: 'MQT connections over time',
-          values: dataForNV
+          values: sortedByDate
         }
       ]
-    }
-  }
-
-  instance.normalizeDate = (data) => {
-    return _.map(data, item => {
-      item.day = moment(item.date).format('DD-MM-YYYY');
-      return item;
-    })
-  }
-
-  instance.groupBy = (data, key) => {
-    if (key === 'day') {
-      return _.groupBy(data, 'day');
     }
   }
 
@@ -62,10 +51,20 @@ Template.dashboard.onCreated(function(){
     return dataForNV;
   }
 
-  instance.sortByDate = (data) => {
-    console.log(_.sortBy(data, (dataItem) => dataItem.x));
-    return _.sortBy(data, (dataItem) => dataItem.x)
+  instance.groupBy = (data, key) => {
+    if (key === 'day') {
+      return _.groupBy(data, 'day');
+    }
   }
+
+  instance.normalizeDate = (data) => {
+    return _.map(data, item => {
+      item.day = moment(item.date).format('DD-MM-YYYY');
+      return item;
+    })
+  }
+
+  instance.sortByDate = (data) => _.sortBy(data, (dataItem) => dataItem.x)
 
   instance.render = (chartData) => {
 
