@@ -113,7 +113,7 @@ Template.dashboard.onRendered(function(){
   const instance = this;
 
   const opts = {
-    size: 1000,
+    size: 10000,
     body: {
       sort: [
         {
