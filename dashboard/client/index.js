@@ -82,6 +82,8 @@ Template.dashboard.onCreated(function(){
           ["%Y", function() { return true; }]
         ]);
 
+        chart.interpolate("basis")
+
         chart.xAxis
           .tickFormat((d) => tickMultiFormat(new Date(d)));
 
