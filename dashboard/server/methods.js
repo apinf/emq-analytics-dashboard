@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor'
 import ES from 'elasticsearch'
 import _ from 'lodash'
 import moment from 'moment'
-import config from '/config'
+import config from '../../config'
 
 Meteor.methods({
   getAggr (opts) {
