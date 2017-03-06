@@ -1,16 +1,38 @@
 import { Meteor } from 'meteor/meteor'
 import { Template } from 'meteor/templating'
-import { ReactiveVar } from 'meteor/reactive-var'
+import { FlowRouter } from 'meteor/kadira:flow-router'
 
 import nvd3 from 'nvd3'
 import d3 from 'd3'
-
 import moment from 'moment'
-import _ from 'lodash'
-import $ from 'jquery'
 
 Template.dashboard.onCreated(function () {
   const instance = this
+
+  instance.opts = {
+    index: 'mqt',
+    size: 0,
+    body: {
+      query: {
+        range: {
+          date: {
+            gte: '',
+            lte: '',
+            format: 'yyyy-MM-dd'
+          }
+        }
+      },
+      aggs: {
+        by_day: {
+          date_histogram: {
+            field: 'date',
+            interval: 'day',
+            format: 'dd-MM-yyyy'
+          }
+        }
+      }
+    }
+  }
 
   instance.getAggrData = opts => new Promise((resolve, reject) => {
     Meteor.call('getAggr', opts, (err, res) => {
@@ -57,33 +79,36 @@ Template.dashboard.onCreated(function () {
       })
     }
   }
-})
 
-Template.dashboard.onRendered(function () {
-  const instance = this
-
-  const opts = {
-    index: 'mqt',
-    size: 0,
-    body: {
-      aggs: {
-        by_day: {
-          date_histogram: {
-            field: 'date',
-            interval: 'day',
-            format: 'dd-MM-yyyy'
-          }
-        }
-      }
-    }
-  }
-
-  instance.autorun(() => {
+  instance.init = opts => {
     instance.getAggrData(opts)
       .then(items => {
         // console.log(items);
         instance.render(items)
       })
       .catch(err => console.error(err))
+  }
+
+  instance.updateQuery = () => {
+    let from = FlowRouter.getQueryParam('from')
+    let to = FlowRouter.getQueryParam('to')
+
+    if (!from && !to) {
+      from = moment().subtract(1, 'month').format('YYYY-MM-DD')
+      to = moment().format('YYYY-MM-DD')
+    }
+
+
+    instance.opts.body.query.range.date.gte = from
+    instance.opts.body.query.range.date.lte = to
+  }
+})
+
+Template.dashboard.onRendered(function () {
+  const instance = this
+
+  instance.autorun(() => {
+    instance.updateQuery()
+    instance.init(instance.opts)
   })
 })
