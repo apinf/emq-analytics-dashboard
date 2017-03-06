@@ -1,35 +1,28 @@
 import { Template } from 'meteor/templating'
 import { FlowRouter } from 'meteor/kadira:flow-router'
 
-Template.filter.onRendered(function () {
-  const instance = this
+import $ from 'jquery'
 
-  $('#timeframe-datepickers').datepicker({
-    todayHighlight: true,
-    endDate: 'today',
-    autoclose: true,
-    format: 'dd M yyyy'
-  })
-
-
-  $('#analytics-timeframe-start').datepicker()
-    .on('changeDate', event => {
-      FlowRouter.setQueryParams({ from: event.format('yyyy-mm-dd') })
-    })
-
-  $('#analytics-timeframe-end').datepicker()
-  .on('changeDate', event => {
-    FlowRouter.setQueryParams({ to: event.format('yyyy-mm-dd') })
-  })
-
+Template.filter.onRendered(() => {
   const from = FlowRouter.getQueryParam('from')
   const to = FlowRouter.getQueryParam('to')
 
   if (from) {
-    $('#analytics-timeframe-start').datepicker('setDate', new Date(from))
+    $('#analytics-date-from').val(from)
   }
 
   if (to) {
-    $('#analytics-timeframe-end').datepicker('setDate', new Date(to))
+    $('#analytics-date-to').val(to)
+  }
+})
+
+Template.filter.events({
+  'change #analytics-date-from': event => {
+    const from = $(event.currentTarget).val()
+    FlowRouter.setQueryParams({ from })
+  },
+  'change #analytics-date-to': event => {
+    const to = $(event.currentTarget).val()
+    FlowRouter.setQueryParams({ to })
   }
 })

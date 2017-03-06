@@ -52,7 +52,6 @@ npm-mongo@2.2.16_1
 observe-sequence@1.0.15
 ordered-dict@1.0.9
 promise@0.8.8
-rajit:bootstrap3-datepicker@1.6.4
 random@1.0.10
 reactive-dict@1.1.8
 reactive-var@1.0.11

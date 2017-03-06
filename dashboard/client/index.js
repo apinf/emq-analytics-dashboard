@@ -93,11 +93,13 @@ Template.dashboard.onCreated(function () {
     let from = FlowRouter.getQueryParam('from')
     let to = FlowRouter.getQueryParam('to')
 
-    if (!from && !to) {
+    if (!from) {
       from = moment().subtract(1, 'month').format('YYYY-MM-DD')
-      to = moment().format('YYYY-MM-DD')
     }
 
+    if (!to) {
+      to = moment().format('YYYY-MM-DD')
+    }
 
     instance.opts.body.query.range.date.gte = from
     instance.opts.body.query.range.date.lte = to
