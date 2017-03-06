@@ -7,8 +7,8 @@
 | **date**           | `String` | Yes                 | timestamp                      |
 | **type**           | `String` | Yes                 | log type                       |
 | **username**       | `String` | Yes                 | username                       |
-| **topic_table**    | `String` | Depends on log type | List of topics to subscribe to |
-| **topic_and_opts** | `String` | Depends on log type | Topic and options              |
+| **topic_table**    | `Object` | Depends on log type | List of topics to subscribe to |
+| **topic_and_opts** | `Object` | Depends on log type | Topic and options              |
 | **reason**         | `String` | Depends on log type | Reason for session terminate   |
 | **message**        | `Object` | Depends on log type | Message send via **publish**   |
 
