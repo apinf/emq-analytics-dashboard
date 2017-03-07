@@ -9,8 +9,14 @@ Meteor.methods({
     const client = new ES.Client({
       host: config.host
     })
+    
+    const startTime = new Date().getTime()
 
     return client.search(opts).then(res => {
+
+      const took1 = new Date().getTime() - startTime
+      console.log('Request took: ' + took1 + ' milliseconds.');
+
       const values = []
       const data = res.aggregations.by_day.buckets
 
