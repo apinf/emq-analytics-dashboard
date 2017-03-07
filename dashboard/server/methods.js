@@ -4,12 +4,12 @@ import _ from 'lodash'
 import moment from 'moment'
 import config from '../../config'
 
+const client = new ES.Client({
+  host: config.host
+})
+
 Meteor.methods({
   getAggr (opts) {
-    const client = new ES.Client({
-      host: config.host
-    })
-    
     const startTime = new Date().getTime()
 
     return client.search(opts).then(res => {
