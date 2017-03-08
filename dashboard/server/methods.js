@@ -13,9 +13,11 @@ Meteor.methods({
     const startTime = new Date().getTime()
 
     return client.search(opts).then(res => {
-
       const took1 = new Date().getTime() - startTime
-      console.log('Request took: ' + took1 + ' milliseconds.');
+      console.log(`--------------`)
+      console.log(`Total: ${res.hits.total} items.`)
+      console.log(`Request took: ${took1} milliseconds.`)
+      console.log(`ES search execution took: ${res.took} milliseconds.`)
 
       const values = []
       const data = res.aggregations.by_day.buckets

@@ -83,7 +83,6 @@ Template.dashboard.onCreated(function () {
   instance.init = opts => {
     instance.getAggrData(opts)
       .then(items => {
-        // console.log(items);
         instance.render(items)
       })
       .catch(err => console.error(err))
@@ -100,6 +99,11 @@ Template.dashboard.onCreated(function () {
     if (!to) {
       to = moment().format('YYYY-MM-DD')
     }
+
+    // For metics collection
+    // const a = moment(from, 'YYYY-MM-DD')
+    // const b = moment(to, 'YYYY-MM-DD')
+    // console.log(`${b.diff(a, 'days')} days shown.`)
 
     instance.opts.body.query.range.date.gte = from
     instance.opts.body.query.range.date.lte = to
