@@ -1,17 +1,10 @@
 <template name="filter">
   <div class="row" style="margin: 1em 0;">
     <div class="col-md-6">
-
+      {{> filterGranularity }}
     </div>
     <div class="col-md-6">
-      <div class="form-group-sm">
-        <div class="input-group">
-          <div class="input-group-addon">From</div>
-          <input type="date" class="form-control" id="analytics-date-from" >
-          <div class="input-group-addon">To</div>
-          <input type="date" class="form-control" id="analytics-date-to" >
-        </div>
-      </div>
+      {{> filterDateRange }}
     </div>
   </div>
 </template>

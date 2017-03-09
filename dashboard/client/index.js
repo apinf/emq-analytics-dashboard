@@ -26,7 +26,7 @@ Template.dashboard.onCreated(function () {
         by_day: {
           date_histogram: {
             field: 'date',
-            interval: 'day',
+            interval: '',
             format: 'dd-MM-yyyy'
           }
         }
@@ -91,13 +91,21 @@ Template.dashboard.onCreated(function () {
   instance.updateQuery = () => {
     let from = FlowRouter.getQueryParam('from')
     let to = FlowRouter.getQueryParam('to')
+    let granularity = FlowRouter.getQueryParam('granularity')
 
     if (!from) {
+      // Set last ~30 days by default
       from = moment().subtract(1, 'month').format('YYYY-MM-DD')
     }
 
     if (!to) {
+      // Set current date by default
       to = moment().format('YYYY-MM-DD')
+    }
+
+    if (!granularity) {
+      // Set 'day' granularity by default
+      granularity = 'day'
     }
 
     // For metics collection
@@ -107,6 +115,7 @@ Template.dashboard.onCreated(function () {
 
     instance.opts.body.query.range.date.gte = from
     instance.opts.body.query.range.date.lte = to
+    instance.opts.body.aggs.by_day.date_histogram.interval = granularity
   }
 })
 
