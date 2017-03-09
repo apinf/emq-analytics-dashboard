@@ -62,15 +62,16 @@ Template.dashboard.onCreated(function () {
         chart.interpolate('basis')
 
         chart.xAxis
-          .axisLabel('Time')
           .tickFormat(d => tickMultiFormat(new Date(d)))
+          .axisLabel('Time')
 
         chart.x2Axis
-          .axisLabel('Usage')
           .tickFormat(d => tickMultiFormat(new Date(d)))
+          .axisLabel('Overview chart')
 
         chart.yAxis
           .tickFormat(d3.format(',.2'))
+          .axisLabel('Calls')
 
         chart.y2Axis
           .tickFormat(d3.format(',.2'))
