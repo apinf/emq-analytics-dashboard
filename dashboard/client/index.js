@@ -5,6 +5,7 @@ import { FlowRouter } from 'meteor/kadira:flow-router'
 import nvd3 from 'nvd3'
 import d3 from 'd3'
 import moment from 'moment'
+import _ from 'lodash'
 
 Template.dashboard.onCreated(function () {
   const instance = this
@@ -14,16 +15,22 @@ Template.dashboard.onCreated(function () {
     size: 0,
     body: {
       query: {
-        range: {
-          date: {
-            gte: '',
-            lte: '',
-            format: 'yyyy-MM-dd'
-          }
+        bool: {
+          must: [
+            {
+              range: {
+                date: {
+                  gte: '',
+                  lte: '',
+                  format: 'yyyy-MM-dd'
+                }
+              }
+            }
+          ]
         }
       },
       aggs: {
-        by_day: {
+        logs_over_time: {
           date_histogram: {
             field: 'date',
             interval: '',
@@ -55,16 +62,18 @@ Template.dashboard.onCreated(function () {
         chart.interpolate('basis')
 
         chart.xAxis
+          .axisLabel('Time')
           .tickFormat(d => tickMultiFormat(new Date(d)))
 
         chart.x2Axis
+          .axisLabel('Usage')
           .tickFormat(d => tickMultiFormat(new Date(d)))
 
         chart.yAxis
-        .tickFormat(d3.format(',.2'))
+          .tickFormat(d3.format(',.2'))
 
         chart.y2Axis
-        .tickFormat(d3.format(',.2'))
+          .tickFormat(d3.format(',.2'))
 
         d3.select('#chart svg')
           .attr('height', 500)
@@ -113,9 +122,20 @@ Template.dashboard.onCreated(function () {
     // const b = moment(to, 'YYYY-MM-DD')
     // console.log(`${b.diff(a, 'days')} days shown.`)
 
-    instance.opts.body.query.range.date.gte = from
-    instance.opts.body.query.range.date.lte = to
-    instance.opts.body.aggs.by_day.date_histogram.interval = granularity
+    const q = instance.opts.body.query.bool.must
+
+    const range = _.find(q, obj => typeof obj.range !== 'undefined')
+
+    if (range) {
+      _.remove(q, _.find(q, obj => typeof obj.range !== 'undefined'))
+    }
+
+    range.range.date.gte = from
+    range.range.date.lte = to
+    q.push(range)
+
+    instance.opts.body.query.bool.must = q
+    instance.opts.body.aggs.logs_over_time.date_histogram.interval = granularity
   }
 })
 
