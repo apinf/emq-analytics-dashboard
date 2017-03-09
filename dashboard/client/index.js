@@ -54,7 +54,7 @@ Template.dashboard.onCreated(function () {
         const chart = nv.models.lineWithFocusChart()
 
         const tickMultiFormat = d3.time.format.multi([
-          ['%b %-d', d => d.getDate()],
+          ['%-d %b %y', d => d.getDate()],
           ['%b %-d', d => d.getMonth()],
           ['%Y', () => true]
         ])
@@ -75,6 +75,8 @@ Template.dashboard.onCreated(function () {
 
         chart.y2Axis
           .tickFormat(d3.format(',.2'))
+
+        chart.margin({ left: 70, right: 40 })
 
         d3.select('#chart svg')
           .attr('height', 500)
