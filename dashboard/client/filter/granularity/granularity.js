@@ -11,8 +11,6 @@ Template.filterGranularity.onRendered(function () {
     // Get granularity parameters
     const granularityParameter = FlowRouter.getQueryParam('granularity')
 
-    console.log(granularityParameter);
-
     if (granularityParameter) {
       // Set the granularity UI state from URL parameter
       instance.$(`#${granularityParameter}-granularity`).button('toggle')
