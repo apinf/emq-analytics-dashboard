@@ -13,7 +13,8 @@
     "meteor-node-stubs": "~0.2.0",
     "moment": "^2.16.0",
     "node-uuid": "^1.4.7",
-    "nvd3": "^1.8.5"
+    "nvd3": "^1.8.5",
+    "pikaday": "^1.5.1"
   },
   "devDependencies": {
     "babel-eslint": "^7.1.1",
