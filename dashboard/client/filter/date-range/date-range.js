@@ -1,11 +1,13 @@
 import { Template } from 'meteor/templating'
 import { FlowRouter } from 'meteor/kadira:flow-router'
 
+import moment from 'moment'
+
 import Pikaday from 'pikaday'
 
 Template.filterDateRange.onRendered(() => {
-  const from = FlowRouter.getQueryParam('from')
-  const to = FlowRouter.getQueryParam('to')
+  const from = FlowRouter.getQueryParam('from') || moment().subtract(1, 'month').format('YYYY-MM-DD')
+  const to = FlowRouter.getQueryParam('to') || moment().format('YYYY-MM-DD')
 
   const dpFrom = new Pikaday({
     field: $('#datepicker-from')[0],
