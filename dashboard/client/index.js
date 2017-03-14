@@ -101,24 +101,10 @@ Template.dashboard.onCreated(function () {
   }
 
   instance.updateQuery = () => {
-    let from = FlowRouter.getQueryParam('from')
-    let to = FlowRouter.getQueryParam('to')
-    let granularity = FlowRouter.getQueryParam('granularity')
-
-    if (!from) {
-      // Set last ~30 days by default
-      from = moment().subtract(1, 'month').format('YYYY-MM-DD')
-    }
-
-    if (!to) {
-      // Set current date by default
-      to = moment().format('YYYY-MM-DD')
-    }
-
-    if (!granularity) {
-      // Set 'day' granularity by default
-      granularity = 'day'
-    }
+    const from = FlowRouter.getQueryParam('from') || moment().subtract(1, 'month').format('YYYY-MM-DD')
+    const to = FlowRouter.getQueryParam('to') || moment().format('YYYY-MM-DD')
+    const granularity = FlowRouter.getQueryParam('granularity') || 'day'
+    const type = FlowRouter.getQueryParam('type') || ''
 
     // For metics collection
     // const a = moment(from, 'YYYY-MM-DD')
@@ -128,9 +114,17 @@ Template.dashboard.onCreated(function () {
     const q = instance.opts.body.query.bool.must
 
     const range = _.find(q, obj => typeof obj.range !== 'undefined')
-
     if (range) {
       _.remove(q, _.find(q, obj => typeof obj.range !== 'undefined'))
+    }
+
+    const match = _.find(q, obj => typeof obj.match !== 'undefined')
+    if (match) {
+      _.remove(q, _.find(q, obj => typeof obj.match !== 'undefined'))
+    }
+
+    if (type) {
+      q.push({ match: { type } })
     }
 
     range.range.date.gte = from
