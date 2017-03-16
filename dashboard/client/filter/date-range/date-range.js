@@ -4,6 +4,7 @@ import { FlowRouter } from 'meteor/kadira:flow-router'
 import moment from 'moment'
 
 import Pikaday from 'pikaday'
+import 'pikaday/css/pikaday.css'
 
 Template.filterDateRange.onRendered(() => {
   const from = FlowRouter.getQueryParam('from') || moment().subtract(1, 'month').format('YYYY-MM-DD')
