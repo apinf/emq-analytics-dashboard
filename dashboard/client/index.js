@@ -41,8 +41,18 @@ Template.dashboard.onCreated(function () {
     }
   }
 
-  instance.getAggrData = opts => new Promise((resolve, reject) => {
-    Meteor.call('getAggr', opts, (err, res) => {
+  instance.getChartData = opts => new Promise((resolve, reject) => {
+    Meteor.call('getAggregatedData', opts, (err, res) => {
+      if (err) reject(err)
+      Meteor.call('parseDataForNvd', res, (err1, res1) => {
+        if (err1) reject(err1)
+        resolve(res1)
+      })
+    })
+  })
+
+  instance.parseDataForNvd = data => new Promise((resolve, reject) => {
+    Meteor.call('parseDataForNvd', data, (err, res) => {
       if (err) reject(err)
       resolve(res)
     })
@@ -93,7 +103,7 @@ Template.dashboard.onCreated(function () {
   }
 
   instance.init = opts => {
-    instance.getAggrData(opts)
+    instance.getChartData(opts)
       .then(items => {
         instance.render(items)
       })
