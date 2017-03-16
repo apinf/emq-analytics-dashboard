@@ -106,32 +106,27 @@ Template.dashboard.onCreated(function () {
     const granularity = FlowRouter.getQueryParam('granularity') || 'day'
     const type = FlowRouter.getQueryParam('type') || ''
 
-    // For metics collection
-    // const a = moment(from, 'YYYY-MM-DD')
-    // const b = moment(to, 'YYYY-MM-DD')
-    // console.log(`${b.diff(a, 'days')} days shown.`)
+    const mustQuery = instance.opts.body.query.bool.must
 
-    const q = instance.opts.body.query.bool.must
-
-    const range = _.find(q, obj => typeof obj.range !== 'undefined')
+    const range = _.find(mustQuery, obj => typeof obj.range !== 'undefined')
     if (range) {
-      _.remove(q, _.find(q, obj => typeof obj.range !== 'undefined'))
+      _.remove(mustQuery, _.find(mustQuery, obj => typeof obj.range !== 'undefined'))
     }
 
-    const match = _.find(q, obj => typeof obj.match !== 'undefined')
+    const match = _.find(mustQuery, obj => typeof obj.match !== 'undefined')
     if (match) {
-      _.remove(q, _.find(q, obj => typeof obj.match !== 'undefined'))
+      _.remove(mustQuery, _.find(mustQuery, obj => typeof obj.match !== 'undefined'))
     }
 
     if (type) {
-      q.push({ match: { type } })
+      mustQuery.push({ match: { type } })
     }
 
     range.range.date.gte = from
     range.range.date.lte = to
-    q.push(range)
+    mustQuery.push(range)
 
-    instance.opts.body.query.bool.must = q
+    instance.opts.body.query.bool.must = mustQuery
     instance.opts.body.aggs.logs_over_time.date_histogram.interval = granularity
   }
 })
