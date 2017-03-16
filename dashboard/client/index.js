@@ -16,17 +16,7 @@ Template.dashboard.onCreated(function () {
     body: {
       query: {
         bool: {
-          must: [
-            {
-              range: {
-                date: {
-                  gte: '',
-                  lte: '',
-                  format: 'yyyy-MM-dd'
-                }
-              }
-            }
-          ]
+          must: []
         }
       },
       aggs: {
@@ -132,9 +122,15 @@ Template.dashboard.onCreated(function () {
       mustQuery.push({ match: { type } })
     }
 
-    range.range.date.gte = from
-    range.range.date.lte = to
-    mustQuery.push(range)
+    mustQuery.push({
+      range: {
+        date: {
+          gte: from,
+          lte: to,
+          format: 'yyyy-MM-dd'
+        }
+      }
+    })
 
     instance.opts.body.query.bool.must = mustQuery
     instance.opts.body.aggs.logs_over_time.date_histogram.interval = granularity
