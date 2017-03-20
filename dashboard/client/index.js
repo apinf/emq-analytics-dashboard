@@ -108,11 +108,13 @@ Template.dashboard.onCreated(function () {
 
     const mustQuery = instance.opts.body.query.bool.must
 
+    // Find & remove "range" query object from array
     const range = _.find(mustQuery, obj => typeof obj.range !== 'undefined')
     if (range) {
       _.remove(mustQuery, _.find(mustQuery, obj => typeof obj.range !== 'undefined'))
     }
 
+    // Find & remove "match" query object from array
     const match = _.find(mustQuery, obj => typeof obj.match !== 'undefined')
     if (match) {
       _.remove(mustQuery, _.find(mustQuery, obj => typeof obj.match !== 'undefined'))
