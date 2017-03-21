@@ -1,137 +1,139 @@
-import { Meteor } from 'meteor/meteor';
-import { Template } from 'meteor/templating';
-import { ReactiveVar } from 'meteor/reactive-var';
+import { Meteor } from 'meteor/meteor'
+import { Template } from 'meteor/templating'
+import { FlowRouter } from 'meteor/kadira:flow-router'
 
-import nvd3 from 'nvd3';
-import d3 from 'd3';
+import nvd3 from 'nvd3'
+import d3 from 'd3'
+import moment from 'moment'
+import _ from 'lodash'
 
-import moment from 'moment';
-import _ from 'lodash';
-import $ from 'jquery';
+Template.dashboard.onCreated(function () {
+  const instance = this
 
-Template.dashboard.onCreated(function(){
-  const instance = this;
-
-  instance.getChartData = (opts) => {
-    return new Promise((resolve, reject) => {
-      Meteor.call('getEsData', opts, (err, res) => {
-        if (err) reject(err);
-        resolve(res.hits.hits);
-      });
-    });
-  }
-
-  instance.parseEsData = esData => _.map(esData, item => item._source);
-
-  instance.parseDataForNV = data => {
-
-    const dataWithNormalizedDate = instance.normalizeDate(data)
-
-    const grouppedByDate = instance.groupBy(dataWithNormalizedDate, 'day')
-
-    const dataForNV = instance.buildDataForNV(grouppedByDate)
-
-    const sortedByDate = instance.sortByDate(dataForNV);
-
-    return {
-      data: [
-        {
-          key: 'MQT connections over time',
-          values: sortedByDate
+  instance.opts = {
+    index: 'mqt',
+    size: 0,
+    body: {
+      query: {
+        bool: {
+          must: []
         }
-      ]
+      },
+      aggs: {
+        logs_over_time: {
+          date_histogram: {
+            field: 'date',
+            interval: '',
+            format: 'dd-MM-yyyy'
+          }
+        }
+      }
     }
   }
 
-  instance.buildDataForNV = (data) => {
-    let dataForNV = [];
-    for (key in data) {
-      dataForNV.push({ x: moment(key, 'DD-MM-YYYY').valueOf(), y: data[key].length })
-    }
-    return dataForNV;
-  }
-
-  instance.groupBy = (data, key) => {
-    if (key === 'day') {
-      return _.groupBy(data, 'day');
-    }
-  }
-
-  instance.normalizeDate = (data) => {
-    return _.map(data, item => {
-      item.day = moment(item.date).format('DD-MM-YYYY');
-      return item;
+  instance.getChartData = opts => new Promise((resolve, reject) => {
+    Meteor.call('getChartData', opts, (err, res) => {
+      if (err) reject(err)
+      resolve(res)
     })
-  }
+  })
 
-  instance.sortByDate = (data) => _.sortBy(data, (dataItem) => dataItem.x)
+  instance.render = data => {
+    if (data) {
+      nv.addGraph(() => {
+        const chart = nv.models.lineWithFocusChart()
 
-  instance.render = (chartData) => {
+        const tickMultiFormat = d3.time.format.multi([
+          ['%-d %b %y', d => d.getDate()],
+          ['%b %-d', d => d.getMonth()],
+          ['%Y', () => true]
+        ])
 
-    const data = instance.parseEsData(chartData);
-
-    const dataForNV = instance.parseDataForNV(data);
-
-    if (dataForNV.data) {
-      nv.addGraph(function() {
-        var chart = nv.models.lineWithFocusChart();
-
-        var tickMultiFormat = d3.time.format.multi([
-          ["%b %-d", function(d) { return d.getDate() != 1; }], // not the first of the month
-          ["%b %-d", function(d) { return d.getMonth(); }], // not Jan 1st
-          ["%Y", function() { return true; }]
-        ]);
-
-        chart.interpolate("basis")
+        chart.interpolate('basis')
 
         chart.xAxis
-          .tickFormat((d) => tickMultiFormat(new Date(d)));
+          .tickFormat(d => tickMultiFormat(new Date(d)))
+          .axisLabel('Time')
 
         chart.x2Axis
-          .tickFormat((d) => tickMultiFormat(new Date(d)));
+          .tickFormat(d => tickMultiFormat(new Date(d)))
+          .axisLabel('Overview chart')
 
         chart.yAxis
-        .tickFormat(d3.format(',.2'));
+          .tickFormat(d3.format(',.2'))
+          .axisLabel('Calls')
 
         chart.y2Axis
-        .tickFormat(d3.format(',.2'));
+          .tickFormat(d3.format(',.2'))
+
+        chart.margin({ left: 70, right: 40 })
 
         d3.select('#chart svg')
           .attr('height', 500)
-          .datum(dataForNV.data)
-          .transition().duration(500)
-          .call(chart);
+          .datum(data)
+          .transition()
+          .duration(500)
+          .call(chart)
 
-        nv.utils.windowResize(chart.update);
+        nv.utils.windowResize(chart.update)
 
-        return chart;
-      });
-
+        return chart
+      })
     }
   }
-});
 
-Template.dashboard.onRendered(function(){
-  const instance = this;
-
-  const opts = {
-    size: 10000,
-    body: {
-      sort: [
-        {
-          date: {
-            order: 'desc',
-          },
-        },
-      ],
-    },
-  };
-
-  instance.autorun(() => {
-    instance.getChartData({size: 1000})
-      .then((items) => {
+  instance.init = opts => {
+    instance.getChartData(opts)
+      .then(items => {
         instance.render(items)
       })
-      .catch(err => console.error(err));
-  });
-});
+      .catch(err => console.error(err))
+  }
+
+  instance.updateQuery = () => {
+    const from = FlowRouter.getQueryParam('from') || moment().subtract(1, 'month').format('YYYY-MM-DD')
+    const to = FlowRouter.getQueryParam('to') || moment().format('YYYY-MM-DD')
+    const granularity = FlowRouter.getQueryParam('granularity') || 'day'
+    const type = FlowRouter.getQueryParam('type') || ''
+
+    const mustQuery = instance.opts.body.query.bool.must
+
+    // Find & remove "range" query object from array
+    const range = _.find(mustQuery, obj => typeof obj.range !== 'undefined')
+    if (range) {
+      _.remove(mustQuery, _.find(mustQuery, obj => typeof obj.range !== 'undefined'))
+    }
+
+    // Find & remove "match" query object from array
+    const match = _.find(mustQuery, obj => typeof obj.match !== 'undefined')
+    if (match) {
+      _.remove(mustQuery, _.find(mustQuery, obj => typeof obj.match !== 'undefined'))
+    }
+
+    if (type) {
+      mustQuery.push({ match: { type } })
+    }
+
+    mustQuery.push({
+      range: {
+        date: {
+          gte: from,
+          lte: to,
+          format: 'yyyy-MM-dd'
+        }
+      }
+    })
+
+    instance.opts.body.query.bool.must = mustQuery
+    instance.opts.body.aggs.logs_over_time.date_histogram.interval = granularity
+  }
+})
+
+Template.dashboard.onRendered(function () {
+  const instance = this
+
+  instance.autorun(() => {
+    instance.updateQuery()
+    instance.init(instance.opts)
+  })
+})

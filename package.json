@@ -5,13 +5,23 @@
     "start": "meteor run"
   },
   "dependencies": {
+    "babel-runtime": "^6.23.0",
     "d3": "^3.5.17",
     "elasticsearch": "^12.0.1",
-    "jquery": "^3.1.1",
+    "jquery": "^2.2.4",
     "lodash": "^4.17.2",
     "meteor-node-stubs": "~0.2.0",
     "moment": "^2.16.0",
     "node-uuid": "^1.4.7",
-    "nvd3": "^1.8.5"
+    "nvd3": "^1.8.5",
+    "pikaday": "^1.5.1"
+  },
+  "devDependencies": {
+    "babel-eslint": "^7.1.1",
+    "eslint": "^3.17.0",
+    "eslint-config-airbnb-base": "^11.1.1",
+    "eslint-import-resolver-meteor": "^0.3.4",
+    "eslint-plugin-import": "^2.2.0",
+    "eslint-plugin-meteor": "^4.0.1"
   }
 }

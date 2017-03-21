@@ -1,0 +1,22 @@
+<template name="filterMessageType">
+  <div>
+    <select
+      id="filter-message-type"
+      data-style="btn-sm btn-default"
+      title="Filter by message type"
+      >
+      <option value="">All</option>
+      <option value="on_client_connected">on_client_connected</option>
+      <option value="on_client_disconnected">on_client_disconnected</option>
+      <option value="on_client_subscribe">on_client_subscribe</option>
+      <option value="on_client_unsubscribe">on_client_unsubscribe</option>
+      <option value="on_session_created">on_session_created</option>
+      <option value="on_session_subscribed">on_session_subscribed</option>
+      <option value="on_session_unsubscribed">on_session_unsubscribed</option>
+      <option value="on_session_terminated">on_session_terminated</option>
+      <option value="on_message_publish">on_message_publish</option>
+      <option value="on_message_delivered">on_message_delivered</option>
+      <option value="on_message_acked">on_message_acked</option>
+    </select>
+  </div>
+</template>

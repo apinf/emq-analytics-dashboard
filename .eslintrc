@@ -1,0 +1,30 @@
+{
+  "parser": "babel-eslint",
+  "env": {
+    "browser": true,
+    "jquery": true,
+  },
+  "plugins": [
+    "meteor"
+  ],
+  "extends": [
+    "airbnb-base",
+    "plugin:meteor/recommended"
+  ],
+  "settings": {
+    "import/resolver": "meteor"
+  },
+  "rules": {
+    "arrow-parens": [2,"as-needed"],
+    "comma-dangle": [2,"never"],
+    "space-before-function-paren": [
+      2,
+      {
+        "anonymous": "always",
+        "named": "always"
+      }
+    ],
+    "no-underscore-dangle": 0,
+    "semi": [2, "never"]
+  }
+}
