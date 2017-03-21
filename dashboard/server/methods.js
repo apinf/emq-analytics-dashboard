@@ -36,10 +36,12 @@ Meteor.methods({
   getEventTypes () {
     // Construct custom query
     const query = {
-      aggs: {
-        types: {
-          terms: {
-            field: 'event'
+      body: {
+        aggs: {
+          types: {
+            terms: {
+              field: 'event'
+            }
           }
         }
       }
