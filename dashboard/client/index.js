@@ -11,9 +11,6 @@ Template.dashboard.onCreated(function () {
   const instance = this
 
   instance.opts = {
-    index: 'mqtt',
-    type: 'events',
-    size: 0,
     body: {
       query: {
         bool: {
