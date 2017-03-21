@@ -4,9 +4,12 @@
       id="filter-event"
       data-style="btn-sm btn-default"
       title="Filter by event"
-      >
+    >
       <option value="">All</option>
-      <option value="client_connected">client_connected</option>
+      {{# each eventType in eventTypes }}
+        <option value="{{ eventType.key }}">{{ eventType.key }}</option>
+      {{/ each}}
+      <!-- <option value="client_connected">client_connected</option>
       <option value="client_disconnected">client_disconnected</option>
       <option value="client_subscribe">client_subscribe</option>
       <option value="client_unsubscribe">client_unsubscribe</option>
@@ -16,7 +19,7 @@
       <option value="session_terminated">session_terminated</option>
       <option value="message_published">message_published</option>
       <option value="message_delivered">message_delivered</option>
-      <option value="message_acked">message_acked</option>
+      <option value="message_acked">message_acked</option> -->
     </select>
   </div>
 </template>
