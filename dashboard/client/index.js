@@ -11,7 +11,8 @@ Template.dashboard.onCreated(function () {
   const instance = this
 
   instance.opts = {
-    index: 'mqt',
+    index: 'mqtt',
+    type: 'events',
     size: 0,
     body: {
       query: {
@@ -22,7 +23,7 @@ Template.dashboard.onCreated(function () {
       aggs: {
         logs_over_time: {
           date_histogram: {
-            field: 'date',
+            field: 'timestamp',
             interval: '',
             format: 'dd-MM-yyyy'
           }
@@ -94,7 +95,7 @@ Template.dashboard.onCreated(function () {
     const from = FlowRouter.getQueryParam('from') || moment().subtract(1, 'month').format('YYYY-MM-DD')
     const to = FlowRouter.getQueryParam('to') || moment().format('YYYY-MM-DD')
     const granularity = FlowRouter.getQueryParam('granularity') || 'day'
-    const type = FlowRouter.getQueryParam('type') || ''
+    const emqEvent = FlowRouter.getQueryParam('event') || ''
 
     const mustQuery = instance.opts.body.query.bool.must
 
@@ -110,13 +111,13 @@ Template.dashboard.onCreated(function () {
       _.remove(mustQuery, _.find(mustQuery, obj => typeof obj.match !== 'undefined'))
     }
 
-    if (type) {
-      mustQuery.push({ match: { type } })
+    if (emqEvent) {
+      mustQuery.push({ match: { event: emqEvent } })
     }
 
     mustQuery.push({
       range: {
-        date: {
+        timestamp: {
           gte: from,
           lte: to,
           format: 'yyyy-MM-dd'
