@@ -1,0 +1,27 @@
+<template name="filterEvent">
+  <div>
+    <select
+      id="filter-event"
+      data-style="btn-sm btn-default"
+      title="Filter by event"
+    >
+      <option value="">All</option>
+      {{# if eventTypes }}
+        {{# each eventType in eventTypes }}
+          <option value="{{ eventType.key }}">{{ eventType.key }}</option>
+        {{/ each}}
+      {{/ if }}
+      <!-- <option value="client_connected">client_connected</option>
+      <option value="client_disconnected">client_disconnected</option>
+      <option value="client_subscribe">client_subscribe</option>
+      <option value="client_unsubscribe">client_unsubscribe</option>
+      <option value="session_created">session_created</option>
+      <option value="session_subscribed">session_subscribed</option>
+      <option value="session_unsubscribed">session_unsubscribed</option>
+      <option value="session_terminated">session_terminated</option>
+      <option value="message_published">message_published</option>
+      <option value="message_delivered">message_delivered</option>
+      <option value="message_acked">message_acked</option> -->
+    </select>
+  </div>
+</template>
