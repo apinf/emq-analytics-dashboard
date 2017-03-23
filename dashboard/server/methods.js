@@ -54,5 +54,31 @@ Meteor.methods({
       res => res.aggregations.types.buckets,
       err => new Meteor.Error(err.message)
     )
+  },
+  getTopicsList () {
+    // Construct custom query
+    const query = {
+        aggs: {
+          types: {
+            nested: {
+              path: 'topic'
+            },
+            aggs: {
+              terms: {
+                field: 'topic.topic'
+              }
+            }
+          }
+        }
+      }
+    }
+    // Merge default query with custom
+    const esOpts = _.assign(opts, query)
+
+    // Execute search
+    return client.search(esOpts).then(
+      res => res.aggregations.types.buckets,
+      err => new Meteor.Error(err.message)
+    )
   }
 })
