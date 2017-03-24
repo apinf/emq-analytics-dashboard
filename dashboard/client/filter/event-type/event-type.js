@@ -36,10 +36,3 @@ Template.filterEvent.events({
     FlowRouter.setQueryParams({ event: emqEvent })
   }
 })
-
-Template.filterEvent.helpers({
-  eventTypes () {
-    const instance = Template.instance()
-    return instance.eventTypes.get()
-  }
-})
