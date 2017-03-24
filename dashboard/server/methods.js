@@ -54,18 +54,14 @@ Meteor.methods({
       err => new Meteor.Error(err)
     )
   },
-  getTopicsList () {
+  getTopics () {
     // Construct custom query
     const query = {
+      body: {
         aggs: {
-          types: {
-            nested: {
-              path: 'topic'
-            },
-            aggs: {
-              terms: {
-                field: 'topic.topic'
-              }
+          topics: {
+            terms: {
+              field: 'topic'
             }
           }
         }
@@ -76,8 +72,8 @@ Meteor.methods({
 
     // Execute search
     return client.search(esOpts).then(
-      res => res.aggregations.types.buckets,
-      err => new Meteor.Error(err.message)
+      res => res.aggregations.topics.buckets,
+      err => new Meteor.Error(err)
     )
   }
 })
