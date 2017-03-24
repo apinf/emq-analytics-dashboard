@@ -93,6 +93,7 @@ Template.dashboard.onCreated(function () {
     const to = FlowRouter.getQueryParam('to') || moment().format('YYYY-MM-DD')
     const granularity = FlowRouter.getQueryParam('granularity') || 'day'
     const emqEvent = FlowRouter.getQueryParam('event') || ''
+    const topic = FlowRouter.getQueryParam('topic') || ''
 
     const mustQuery = instance.opts.body.query.bool.must
 
@@ -108,10 +109,17 @@ Template.dashboard.onCreated(function () {
       _.remove(mustQuery, _.find(mustQuery, obj => typeof obj.match !== 'undefined'))
     }
 
+    // Push "filter-by-event" query
     if (emqEvent) {
       mustQuery.push({ match: { event: emqEvent } })
     }
 
+    // Push "filter-by-topic" query
+    if (topic) {
+      mustQuery.push({ match: { topic } })
+    }
+
+    // Push "filter-by-range" query
     mustQuery.push({
       range: {
         timestamp: {
