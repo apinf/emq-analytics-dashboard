@@ -108,7 +108,10 @@ Template.dashboard.onCreated(function () {
     // so that we can update query with "fresh" rules
     const match = _.find(mustQuery, obj => typeof obj.match !== 'undefined')
     if (match) {
-      _.remove(mustQuery, _.find(mustQuery, obj => typeof obj.match !== 'undefined'))
+      _.remove(
+        mustQuery,
+        q => typeof q.match === 'object'
+      )
     }
 
     // Push "filter-by-event" query
