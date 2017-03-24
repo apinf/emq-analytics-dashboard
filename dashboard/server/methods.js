@@ -23,14 +23,13 @@ Meteor.methods({
   getChartData (query) {
     // Merge default query with custom
     const esOpts = _.assign(opts, query)
-
     // Execute search
     return client.search(esOpts).then(
       res => {
         const data = res.aggregations.logs_over_time.buckets
         return parseDataForNvd(data)
       },
-      err => new Meteor.Error(err.message)
+      err => new Meteor.Error(err)
     )
   },
   getEventTypes () {
@@ -52,7 +51,7 @@ Meteor.methods({
     // Execute search
     return client.search(esOpts).then(
       res => res.aggregations.types.buckets,
-      err => new Meteor.Error(err.message)
+      err => new Meteor.Error(err)
     )
   },
   getTopicsList () {
