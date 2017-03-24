@@ -28,6 +28,9 @@ Template.filterTopic.onCreated(function () {
 
 Template.filterTopic.onRendered(function () {
   const instance = this
+
+  const preSelectedTopic = FlowRouter.getQueryParam('topic') || null
+
   $('#filter-topic').selectpicker()
 
   instance.autorun(() => {
@@ -45,6 +48,12 @@ Template.filterTopic.onRendered(function () {
       // Update "select" is required to initialize bootstrap-select
       // with fresh data
       $('#filter-topic').selectpicker('refresh')
+
+      // Update UI selecttion with value (if one exists)
+      // that came from URL params after all options are loaded & renderd
+      if (preSelectedTopic) {
+        $('#filter-topic').selectpicker('val', preSelectedTopic)
+      }
     }
   })
 })

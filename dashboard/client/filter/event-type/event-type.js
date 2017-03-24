@@ -28,6 +28,9 @@ Template.filterEvent.onCreated(function () {
 
 Template.filterEvent.onRendered(function () {
   const instance = this
+
+  const preSelectedEventType = FlowRouter.getQueryParam('event') || null
+
   $('#filter-event').selectpicker()
 
   instance.autorun(() => {
@@ -45,6 +48,12 @@ Template.filterEvent.onRendered(function () {
       // Update "select" is required to initialize bootstrap-select
       // with fresh data
       $('#filter-event').selectpicker('refresh')
+
+      // Update UI selecttion with value (if one exists)
+      // that came from URL params after all options are loaded & renderd
+      if (preSelectedEventType) {
+        $('#filter-event').selectpicker('val', preSelectedEventType)
+      }
     }
   })
 })
