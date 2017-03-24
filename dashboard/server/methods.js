@@ -23,6 +23,7 @@ Meteor.methods({
   getChartData (query) {
     // Merge default query with custom
     const esOpts = _.assign(opts, query)
+
     // Execute search
     return client.search(esOpts).then(
       res => {
