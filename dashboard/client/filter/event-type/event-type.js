@@ -4,6 +4,7 @@ import { Template } from 'meteor/templating'
 import { FlowRouter } from 'meteor/kadira:flow-router'
 
 import $ from 'jquery'
+import _ from 'lodash'
 
 Template.filterEvent.onCreated(function () {
   const instance = this
@@ -25,8 +26,27 @@ Template.filterEvent.onCreated(function () {
     .catch(err => console.error(err))
 })
 
-Template.filterEvent.onRendered(() => {
+Template.filterEvent.onRendered(function () {
+  const instance = this
   $('#filter-event').selectpicker()
+
+  instance.autorun(() => {
+    const eventTypes = instance.eventTypes.get()
+    if (eventTypes.length > 0) {
+      // Dymanically fill selectpicker with this "hacky" way
+      // since appoaches from "bootstrap-select" does not work
+      _.forEach(eventTypes, e => {
+        $('#filter-event').append($('<option>', {
+          value: e.key,
+          text: e.key
+        }))
+      })
+
+      // Update "select" is required to initialize bootstrap-select
+      // with fresh data
+      $('#filter-event').selectpicker('refresh')
+    }
+  })
 })
 
 Template.filterEvent.events({
