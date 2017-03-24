@@ -5,7 +5,7 @@ export default data => {
   const values = []
 
   _.forEach(data, item => values.push({
-    x: moment(item.key_as_string, 'DD-MM-YYYY').valueOf(),
+    x: item.key,
     y: item.doc_count
   }))
 
