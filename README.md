@@ -25,8 +25,54 @@
   }
   ```
 
-4. Run it
+4. Run
 
   ```
   $ npm start
   ```
+
+### Send following acknowledgements to elasticsearch
+
+> **Note:** Update `<es_host>`, `<index>` and `<type>` to yours.
+
+```
+PUT <es_host>/<index>/_mapping/<type>
+
+{
+  "properties": {
+    "timestamp": {
+      "type": "date"
+    }
+  }
+}
+```
+
+```
+PUT <es_host>/<index>/_mapping/<type>
+
+{
+  "properties": {
+    "event": {
+      "type": "text",
+      "fielddata": true
+    }
+  }
+}
+```
+
+```
+PUT <es_host>/<index>/_mapping/<type>
+
+{
+  "properties": {
+    "topic": {
+      "type": "text",
+      "fielddata": true
+    }
+  }
+}
+```
+
+### License
+
+MIT (See license file)

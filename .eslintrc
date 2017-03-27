@@ -4,6 +4,10 @@
     "browser": true,
     "jquery": true,
   },
+  "parserOptions": {
+    "allowImportExportEverywhere": true,
+    "ecmaVersion": 7
+  },
   "plugins": [
     "meteor"
   ],
@@ -15,16 +19,43 @@
     "import/resolver": "meteor"
   },
   "rules": {
-    "arrow-parens": [2,"as-needed"],
-    "comma-dangle": [2,"never"],
+  "arrow-body-style": [
+      2,
+      "always"
+    ],
+    "comma-dangle": [
+      2,
+      "always-multiline"
+    ],
+    "func-names": [
+      "error",
+      "never"
+    ],
+    "import/no-extraneous-dependencies": 0,
+    "meteor/no-session": [
+      0
+    ],
+    "no-param-reassign": [
+      "error",
+      {
+        "props": false
+      }
+    ],
+    "no-underscore-dangle": [
+      2,
+      {
+        "allow": ["_id", "__", "_initialized"]
+      }
+    ],
+    "no-negated-condition": [
+      "error",
+    ],
     "space-before-function-paren": [
       2,
       {
         "anonymous": "always",
         "named": "always"
       }
-    ],
-    "no-underscore-dangle": 0,
-    "semi": [2, "never"]
+    ]
   }
 }
