@@ -1,13 +1,13 @@
-import { Meteor } from 'meteor/meteor'
-import ES from 'elasticsearch'
-import _ from 'lodash'
+import { Meteor } from 'meteor/meteor';
+import ES from 'elasticsearch';
+import _ from 'lodash';
 
-import parseDataForNvd from './lib/parse'
-import config from '../../config'
+import parseDataForNvd from './lib/parse';
+import config from '../../config';
 
 const client = new ES.Client({
-  host: config.host
-})
+  host: config.host,
+});
 
 const opts = {
   // Intiial elasticsearch index & type values
@@ -16,22 +16,22 @@ const opts = {
 
   // Amount of items to return
   // Since aggregated data is returned, regular records are not needed
-  size: 0
-}
+  size: 0,
+};
 
 Meteor.methods({
   getChartData (query) {
     // Merge default query with custom
-    const esOpts = _.assign(opts, query)
+    const esOpts = _.assign(opts, query);
 
     // Execute search
     return client.search(esOpts).then(
-      res => {
-        const data = res.aggregations.logs_over_time.buckets
-        return parseDataForNvd(data)
+      (res) => {
+        const data = res.aggregations.logs_over_time.buckets;
+        return parseDataForNvd(data);
       },
-      err => new Meteor.Error(err)
-    )
+      (err) => { return new Meteor.Error(err); }
+    );
   },
   getEventTypes () {
     // Construct custom query
@@ -40,20 +40,20 @@ Meteor.methods({
         aggs: {
           types: {
             terms: {
-              field: 'event'
-            }
-          }
-        }
-      }
-    }
+              field: 'event',
+            },
+          },
+        },
+      },
+    };
     // Merge default query with custom
-    const esOpts = _.assign(opts, query)
+    const esOpts = _.assign(opts, query);
 
     // Execute search
     return client.search(esOpts).then(
-      res => res.aggregations.types.buckets,
-      err => new Meteor.Error(err)
-    )
+      (res) => { return res.aggregations.types.buckets; },
+      (err) => { return new Meteor.Error(err); }
+    );
   },
   getTopics () {
     // Construct custom query
@@ -62,19 +62,19 @@ Meteor.methods({
         aggs: {
           topics: {
             terms: {
-              field: 'topic'
-            }
-          }
-        }
-      }
-    }
+              field: 'topic',
+            },
+          },
+        },
+      },
+    };
     // Merge default query with custom
-    const esOpts = _.assign(opts, query)
+    const esOpts = _.assign(opts, query);
 
     // Execute search
     return client.search(esOpts).then(
-      res => res.aggregations.topics.buckets,
-      err => new Meteor.Error(err)
-    )
-  }
-})
+      (res) => { return res.aggregations.topics.buckets; },
+      (err) => { return new Meteor.Error(err); }
+    );
+  },
+});
