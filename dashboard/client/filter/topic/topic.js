@@ -51,7 +51,7 @@ Template.filterTopic.onRendered(function () {
       // with fresh data
       $('#filter-topic').selectpicker('refresh');
 
-      // Update UI selecttion with value (if one exists)
+      // Update UI selection with value (if one exists)
       // that came from URL params after all options are loaded & renderd
       if (preSelectedTopic) {
         $('#filter-topic').selectpicker('val', preSelectedTopic);
